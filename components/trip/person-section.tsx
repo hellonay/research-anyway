@@ -4,13 +4,15 @@ import { InfoNoteCard } from "@/components/trip/info-note-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { panelColor } from "@/lib/trip/panel-colors";
 import type { Person } from "@/lib/trip/types";
 
-export function PersonSection({ person }: { person: Person }) {
+export function PersonSection({ person, index }: { person: Person; index: number }) {
   const updateAction = updatePerson.bind(null, person.id);
+  const colors = panelColor(index);
 
   return (
-    <details className="rounded-lg border">
+    <details className={`rounded-lg border ${colors}`}>
       <summary className="cursor-pointer p-4">
         <span className="text-lg font-semibold">{person.name}</span>
         {person.infoNotes.length > 0 && (
