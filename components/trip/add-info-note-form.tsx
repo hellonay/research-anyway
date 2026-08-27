@@ -1,19 +1,31 @@
+"use client";
+
+import { useRef } from "react";
+
 import { addInfoNote } from "@/app/actions";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
 export function AddInfoNoteForm({ personId }: { personId: string }) {
   const action = addInfoNote.bind(null, personId);
+  const detailsRef = useRef<HTMLDetailsElement>(null);
 
   return (
-    <details className="rounded-md border border-dashed p-3">
-      <summary className="cursor-pointer text-sm font-medium">정보 추가</summary>
+    <details ref={detailsRef}>
+      <summary
+        className={buttonVariants({
+          size: "sm",
+          className: "cursor-pointer list-none",
+        })}
+      >
+        + 추가
+      </summary>
       <form
         action={action}
         encType="multipart/form-data"
-        className="mt-3 space-y-3"
+        className="mt-3 space-y-3 rounded-md border border-dashed p-3"
       >
         <div className="space-y-1.5">
           <Label htmlFor={`note-title-${personId}`}>제목</Label>
@@ -46,7 +58,18 @@ export function AddInfoNoteForm({ personId }: { personId: string }) {
             multiple
           />
         </div>
-        <Button type="submit">추가</Button>
+        <div className="flex gap-2">
+          <Button type="submit">적용</Button>
+          <Button
+            type="reset"
+            variant="outline"
+            onClick={() => {
+              if (detailsRef.current) detailsRef.current.open = false;
+            }}
+          >
+            취소
+          </Button>
+        </div>
       </form>
     </details>
   );
