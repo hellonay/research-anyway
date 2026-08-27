@@ -1,6 +1,7 @@
 import { randomUUID } from "crypto";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
+import sharp from "sharp";
 
 import { hasDatabase, readTripRow, writeTripRow } from "./db";
 import { createSeedTrip } from "./seed";
@@ -87,20 +88,52 @@ const ALLOWED_IMAGE_TYPES: Record<string, string> = {
   "image/gif": "gif",
 };
 
+// 휴대폰 카메라 원본을 리사이즈 없이 그대로 저장하면 (특히 DB 모드에서 base64로
+// Trip 데이터에 통째로 담다 보니) 사진이 쌓일수록 페이지가 무거워지고, 사진 탭에서
+// Day 섹션을 열고 닫을 때 브라우저가 디코딩해야 할 양이 많아 모바일에서 특히
+// 느려진다(docs/decisions/data-storage.md 재검토 조건 참고). 저장 전에 긴 변을
+// 제한하고 재인코딩해 이 부담을 줄인다.
+const MAX_DIMENSION = 1920;
+const JPEG_QUALITY = 80;
+const WEBP_QUALITY = 80;
+
+async function resizePhoto(buffer: Buffer, mimeType: string): Promise<Buffer> {
+  // 애니메이션 GIF는 sharp가 기본적으로 첫 프레임만 처리해 정지 이미지가 되어버리므로
+  // 리사이즈하지 않고 원본 그대로 둔다.
+  if (mimeType === "image/gif") return buffer;
+
+  // rotate()는 EXIF 방향 정보를 반영해 자동 회전시키고 태그는 제거한다.
+  // 휴대폰 세로 사진이 저장 후 옆으로 눕는 걸 방지한다.
+  const resized = sharp(buffer)
+    .rotate()
+    .resize({ width: MAX_DIMENSION, height: MAX_DIMENSION, fit: "inside", withoutEnlargement: true });
+
+  switch (mimeType) {
+    case "image/png":
+      return resized.png().toBuffer();
+    case "image/webp":
+      return resized.webp({ quality: WEBP_QUALITY }).toBuffer();
+    case "image/jpeg":
+    default:
+      return resized.jpeg({ quality: JPEG_QUALITY }).toBuffer();
+  }
+}
+
 // DB 모드에서는 별도 파일 저장소가 없어 이미지를 data URL로 인코딩해 Trip 데이터 안에 그대로 담는다.
 // 로컬 파일 모드에서는 public/uploads에 저장하고 공유 링크로 바로 보여줄 수 있는 /uploads/... 경로를 돌려준다.
 export async function savePhoto(file: File): Promise<string | null> {
   const ext = ALLOWED_IMAGE_TYPES[file.type];
   if (!ext) return null;
 
+  const original = Buffer.from(await file.arrayBuffer());
+  const buffer = await resizePhoto(original, file.type);
+
   if (hasDatabase()) {
-    const buffer = Buffer.from(await file.arrayBuffer());
     return `data:${file.type};base64,${buffer.toString("base64")}`;
   }
 
   await mkdir(UPLOADS_DIR, { recursive: true });
   const filename = `${randomUUID()}.${ext}`;
-  const buffer = Buffer.from(await file.arrayBuffer());
   await writeFile(path.join(UPLOADS_DIR, filename), buffer);
   return `/uploads/${filename}`;
 }
