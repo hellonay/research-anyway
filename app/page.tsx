@@ -1,5 +1,7 @@
 import Image from "next/image";
 
+import { Button } from "@/components/ui/button";
+
 export default function Home() {
   return (
     <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
@@ -62,6 +64,11 @@ export default function Home() {
           >
             Documentation
           </a>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Button>shadcn preset: b5J4ryY9Q</Button>
+          <Button variant="outline">outline</Button>
+          <Button variant="secondary">secondary</Button>
         </div>
       </main>
     </div>
