@@ -102,6 +102,8 @@ export async function ItemCard({ dayId, item }: { dayId: string; item: Item }) {
                   <img
                     src={photo.url}
                     alt=""
+                    loading="lazy"
+                    decoding="async"
                     className="h-16 w-16 rounded-md object-cover"
                   />
                   <form
