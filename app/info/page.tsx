@@ -14,8 +14,8 @@ export default async function InfoPage() {
       <AddPersonForm />
       {trip.people.length > 0 ? (
         <div className="space-y-4">
-          {trip.people.map((person) => (
-            <PersonSection key={person.id} person={person} />
+          {trip.people.map((person, index) => (
+            <PersonSection key={person.id} person={person} index={index} />
           ))}
         </div>
       ) : (
