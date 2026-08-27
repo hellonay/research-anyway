@@ -1,6 +1,6 @@
-import { AddInfoNoteForm } from "@/components/trip/add-info-note-form";
-import { InfoNoteCard } from "@/components/trip/info-note-card";
+import { AddPersonForm } from "@/components/trip/add-person-form";
 import { PageContainer } from "@/components/trip/page-container";
+import { PersonSection } from "@/components/trip/person-section";
 import { readTrip } from "@/lib/trip/store";
 
 export const dynamic = "force-dynamic";
@@ -11,15 +11,15 @@ export default async function InfoPage() {
   return (
     <PageContainer>
       <h1 className="text-2xl font-semibold tracking-tight">정보</h1>
-      <AddInfoNoteForm />
-      {trip.infoNotes.length > 0 ? (
-        <ul className="space-y-3">
-          {trip.infoNotes.map((note) => (
-            <InfoNoteCard key={note.id} note={note} />
+      <AddPersonForm />
+      {trip.people.length > 0 ? (
+        <div className="space-y-4">
+          {trip.people.map((person) => (
+            <PersonSection key={person.id} person={person} />
           ))}
-        </ul>
+        </div>
       ) : (
-        <p className="text-sm text-muted-foreground">아직 등록된 정보가 없습니다.</p>
+        <p className="text-sm text-muted-foreground">아직 등록된 사람이 없습니다.</p>
       )}
     </PageContainer>
   );

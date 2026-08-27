@@ -5,14 +5,30 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { InfoNote } from "@/lib/trip/types";
 
-export function InfoNoteCard({ note }: { note: InfoNote }) {
-  const updateAction = updateInfoNote.bind(null, note.id);
+export function InfoNoteCard({
+  personId,
+  note,
+}: {
+  personId: string;
+  note: InfoNote;
+}) {
+  const updateAction = updateInfoNote.bind(null, personId, note.id);
 
   return (
     <li className="space-y-3 rounded-md border p-3">
       {note.title && <p className="font-medium">{note.title}</p>}
       {note.text && (
         <p className="whitespace-pre-wrap text-sm text-muted-foreground">{note.text}</p>
+      )}
+      {note.link && (
+        <a
+          href={note.link}
+          target="_blank"
+          rel="noreferrer"
+          className="block break-all text-sm text-primary underline underline-offset-2"
+        >
+          {note.link}
+        </a>
       )}
 
       {note.photos.length > 0 && (
@@ -25,7 +41,7 @@ export function InfoNoteCard({ note }: { note: InfoNote }) {
                 className="h-16 w-16 rounded-md object-cover"
               />
               <form
-                action={deleteInfoNotePhoto.bind(null, note.id, photo.id)}
+                action={deleteInfoNotePhoto.bind(null, personId, note.id, photo.id)}
                 className="absolute -right-1.5 -top-1.5"
               >
                 <button
@@ -66,6 +82,15 @@ export function InfoNoteCard({ note }: { note: InfoNote }) {
             />
           </div>
           <div className="space-y-1.5">
+            <Label htmlFor={`note-edit-link-${note.id}`}>웹 링크</Label>
+            <Input
+              id={`note-edit-link-${note.id}`}
+              name="link"
+              type="url"
+              defaultValue={note.link ?? ""}
+            />
+          </div>
+          <div className="space-y-1.5">
             <Label htmlFor={`note-edit-photos-${note.id}`}>사진 추가</Label>
             <Input
               id={`note-edit-photos-${note.id}`}
@@ -79,7 +104,7 @@ export function InfoNoteCard({ note }: { note: InfoNote }) {
         </form>
       </details>
 
-      <form action={deleteInfoNote.bind(null, note.id)}>
+      <form action={deleteInfoNote.bind(null, personId, note.id)}>
         <Button type="submit" variant="ghost" size="sm">
           삭제
         </Button>
