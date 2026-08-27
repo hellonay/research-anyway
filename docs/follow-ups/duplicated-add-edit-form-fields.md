@@ -1,0 +1,1 @@
+`components/trip/item-card.tsx`의 항목 수정 폼이 `add-item-form.tsx`의 항목 추가 폼과, `components/trip/info-note-card.tsx`의 정보 수정 폼이 `add-info-note-form.tsx`의 정보 추가 폼과 필드 마크업을 거의 그대로 중복하고 있다. 두 경우 모두 필드 목록을 공유 컴포넌트(예: `defaultValues` prop을 받는 `<ItemFields>`, `<InfoNoteFields>`)로 추출하면 한쪽만 고치는 실수를 줄일 수 있다.

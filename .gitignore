@@ -50,3 +50,7 @@ next-env.d.ts
 
 # worktree
 .claude/worktrees
+
+# 여행 앱 런타임 데이터: 시드는 lib/trip/seed.ts에 있고, 실행 중 add/delete로 바뀌는 상태만 여기 저장된다
+/data/
+/public/uploads/
