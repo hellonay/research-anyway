@@ -44,6 +44,7 @@ export function InfoNoteCard({
           <details>
             <summary className="cursor-pointer text-sm font-medium">수정</summary>
             <form
+              id={`note-edit-form-${note.id}`}
               action={updateAction}
               encType="multipart/form-data"
               className="mt-3 space-y-3"
@@ -84,15 +85,18 @@ export function InfoNoteCard({
                   multiple
                 />
               </div>
-              <Button type="submit">저장</Button>
             </form>
+            <div className="mt-3 flex gap-2">
+              <Button type="submit" form={`note-edit-form-${note.id}`}>
+                저장
+              </Button>
+              <form action={deleteInfoNote.bind(null, personId, note.id)}>
+                <Button type="submit" variant="destructive">
+                  삭제
+                </Button>
+              </form>
+            </div>
           </details>
-
-          <form action={deleteInfoNote.bind(null, personId, note.id)}>
-            <Button type="submit" variant="ghost" size="sm">
-              삭제
-            </Button>
-          </form>
         </div>
       </details>
     </li>
