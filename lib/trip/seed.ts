@@ -34,7 +34,7 @@ export function createSeedTrip(): Trip {
     periodStart: null,
     periodEnd: null,
     coverImage: null,
-    infoNotes: [],
+    people: [],
     galleryPhotos: [],
     days: [
       day("목요일", [

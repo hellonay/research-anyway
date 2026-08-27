@@ -29,7 +29,15 @@ export interface InfoNote {
   id: string;
   title: string | null;
   text: string | null;
+  link: string | null;
   photos: Photo[];
+  createdAt: number;
+}
+
+export interface Person {
+  id: string;
+  name: string;
+  infoNotes: InfoNote[];
   createdAt: number;
 }
 
@@ -46,6 +54,6 @@ export interface Trip {
   periodEnd: string | null;
   coverImage: string | null;
   days: Day[];
-  infoNotes: InfoNote[];
+  people: Person[];
   galleryPhotos: GalleryPhoto[];
 }

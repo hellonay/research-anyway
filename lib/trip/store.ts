@@ -17,7 +17,7 @@ const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads");
 
 // 기존에 저장된 데이터에 새로 추가된 필드(정보 카드, 사진첩)가 없을 수 있어 기본값으로 채운다.
 function normalizeTrip(trip: Trip): Trip {
-  trip.infoNotes ??= [];
+  trip.people ??= [];
   trip.galleryPhotos ??= [];
   return trip;
 }

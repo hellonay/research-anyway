@@ -160,17 +160,60 @@ export async function deleteItemPhoto(
   revalidatePath("/");
 }
 
-export async function addInfoNote(formData: FormData) {
-  const title = optionalText(formData.get("title"));
-  const text = optionalText(formData.get("text"));
-  const photos = await collectPhotos(formData);
-  if (!title && !text && photos.length === 0) return;
+export async function addPerson(formData: FormData) {
+  const name = optionalText(formData.get("name"));
+  if (!name) return;
 
   await mutateTrip((trip) => {
-    trip.infoNotes.push({
+    trip.people.push({
+      id: randomUUID(),
+      name,
+      infoNotes: [],
+      createdAt: Date.now(),
+    });
+    return trip;
+  });
+
+  revalidatePath("/info");
+}
+
+export async function updatePerson(personId: string, formData: FormData) {
+  const name = optionalText(formData.get("name"));
+  if (!name) return;
+
+  await mutateTrip((trip) => {
+    const person = trip.people.find((p) => p.id === personId);
+    if (person) person.name = name;
+    return trip;
+  });
+
+  revalidatePath("/info");
+}
+
+export async function deletePerson(personId: string) {
+  await mutateTrip((trip) => {
+    trip.people = trip.people.filter((p) => p.id !== personId);
+    return trip;
+  });
+
+  revalidatePath("/info");
+}
+
+export async function addInfoNote(personId: string, formData: FormData) {
+  const title = optionalText(formData.get("title"));
+  const text = optionalText(formData.get("text"));
+  const link = optionalText(formData.get("link"));
+  const photos = await collectPhotos(formData);
+  if (!title && !text && !link && photos.length === 0) return;
+
+  await mutateTrip((trip) => {
+    const person = trip.people.find((p) => p.id === personId);
+    if (!person) return trip;
+    person.infoNotes.push({
       id: randomUUID(),
       title,
       text,
+      link,
       photos,
       createdAt: Date.now(),
     });
@@ -180,16 +223,23 @@ export async function addInfoNote(formData: FormData) {
   revalidatePath("/info");
 }
 
-export async function updateInfoNote(noteId: string, formData: FormData) {
+export async function updateInfoNote(
+  personId: string,
+  noteId: string,
+  formData: FormData
+) {
   const title = optionalText(formData.get("title"));
   const text = optionalText(formData.get("text"));
+  const link = optionalText(formData.get("link"));
   const newPhotos = await collectPhotos(formData);
 
   await mutateTrip((trip) => {
-    const note = trip.infoNotes.find((n) => n.id === noteId);
+    const person = trip.people.find((p) => p.id === personId);
+    const note = person?.infoNotes.find((n) => n.id === noteId);
     if (!note) return trip;
     note.title = title;
     note.text = text;
+    note.link = link;
     note.photos = [...note.photos, ...newPhotos];
     return trip;
   });
@@ -197,18 +247,24 @@ export async function updateInfoNote(noteId: string, formData: FormData) {
   revalidatePath("/info");
 }
 
-export async function deleteInfoNote(noteId: string) {
+export async function deleteInfoNote(personId: string, noteId: string) {
   await mutateTrip((trip) => {
-    trip.infoNotes = trip.infoNotes.filter((n) => n.id !== noteId);
+    const person = trip.people.find((p) => p.id === personId);
+    if (person) person.infoNotes = person.infoNotes.filter((n) => n.id !== noteId);
     return trip;
   });
 
   revalidatePath("/info");
 }
 
-export async function deleteInfoNotePhoto(noteId: string, photoId: string) {
+export async function deleteInfoNotePhoto(
+  personId: string,
+  noteId: string,
+  photoId: string
+) {
   await mutateTrip((trip) => {
-    const note = trip.infoNotes.find((n) => n.id === noteId);
+    const person = trip.people.find((p) => p.id === personId);
+    const note = person?.infoNotes.find((n) => n.id === noteId);
     if (note) note.photos = note.photos.filter((p) => p.id !== photoId);
     return trip;
   });
