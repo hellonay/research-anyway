@@ -15,10 +15,13 @@ const UPLOADS_DIR = path.join(process.cwd(), "public", "uploads");
 // 코드 디렉터리에 쓰기가 안 되어 로컬 파일 방식이 그 환경에서는 동작하지 않기
 // 때문이다. (docs/decisions/data-storage.md)
 
-// 기존에 저장된 데이터에 새로 추가된 필드(정보 카드, 사진첩)가 없을 수 있어 기본값으로 채운다.
+// 기존에 저장된 데이터에 새로 추가된 필드(정보 카드, 사진첩, 사진의 Day 연결)가 없을 수 있어 기본값으로 채운다.
 function normalizeTrip(trip: Trip): Trip {
   trip.people ??= [];
   trip.galleryPhotos ??= [];
+  for (const photo of trip.galleryPhotos) {
+    photo.dayId ??= null;
+  }
   return trip;
 }
 

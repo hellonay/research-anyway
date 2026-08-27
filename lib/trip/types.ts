@@ -45,6 +45,7 @@ export interface GalleryPhoto {
   id: string;
   url: string;
   caption: string | null;
+  dayId: string | null;
   createdAt: number;
 }
 
