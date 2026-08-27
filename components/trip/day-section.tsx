@@ -1,6 +1,7 @@
 import { ChevronDown } from "lucide-react";
 import { deleteDay } from "@/app/actions";
 import { AddItemForm } from "@/components/trip/add-item-form";
+import { DayLabel } from "@/components/trip/day-label";
 import { ItemCard } from "@/components/trip/item-card";
 import { Button } from "@/components/ui/button";
 import { panelColor } from "@/lib/trip/panel-colors";
@@ -18,17 +19,20 @@ export function DaySection({ day, index }: { day: Day; index: number }) {
         <summary className="flex cursor-pointer list-none items-center justify-between gap-2 p-4">
           <span className="flex items-center gap-2">
             <ChevronDown className="size-4 text-muted-foreground transition-transform group-open:rotate-180" />
-            <h2 className="text-lg font-semibold">{day.label}</h2>
+            <DayLabel dayId={day.id} label={day.label} />
           </span>
           <span className="text-sm text-muted-foreground">{items.length}개 일정</span>
         </summary>
 
         <div className="space-y-3 border-t p-4">
-          <form action={deleteDay.bind(null, day.id)}>
-            <Button type="submit" variant="ghost" size="sm">
-              Day 삭제
-            </Button>
-          </form>
+          <details>
+            <summary className="cursor-pointer text-sm font-medium">수정</summary>
+            <form action={deleteDay.bind(null, day.id)} className="mt-3">
+              <Button type="submit" variant="destructive">
+                Day 삭제
+              </Button>
+            </form>
+          </details>
 
           {items.length > 0 ? (
             <ul className="space-y-2">
