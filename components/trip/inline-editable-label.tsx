@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition, useState, type SyntheticEvent } from "react";
+import { useTransition, useState, type ReactNode, type SyntheticEvent } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,17 +14,21 @@ function stop(event: SyntheticEvent) {
 
 // 사람 이름, Day 이름처럼 패널 헤더에서 바로 고칠 수 있는 짧은 텍스트에 쓰는
 // 공용 인라인 수정 UI. action은 personId/dayId 등으로 미리 bind해 둔 서버
-// 액션을 받는다.
+// 액션을 받는다. extraActions는 편집 모드일 때 저장/취소 옆에 같이 보여줄
+// 버튼(예: Day 삭제)으로, "수정" 트리거를 하나로 합쳐 텍스트가 중복되지
+// 않게 한다.
 export function InlineEditableLabel({
   value,
   fieldName,
   action,
   labelClassName = "text-lg font-semibold",
+  extraActions,
 }: {
   value: string;
   fieldName: string;
   action: (formData: FormData) => Promise<void>;
   labelClassName?: string;
+  extraActions?: ReactNode;
 }) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(value);
@@ -44,7 +48,7 @@ export function InlineEditableLabel({
   if (editing) {
     return (
       <span
-        className="flex items-center gap-2"
+        className="flex flex-wrap items-center gap-2"
         onClick={stop}
         onKeyDown={(event) => {
           if (event.key === "Enter") {
@@ -73,6 +77,7 @@ export function InlineEditableLabel({
         >
           취소
         </Button>
+        {extraActions}
       </span>
     );
   }
