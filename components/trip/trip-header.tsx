@@ -1,4 +1,5 @@
 import { updateTripInfo } from "@/app/actions";
+import { AddDayForm } from "@/components/trip/add-day-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -65,6 +66,10 @@ export function TripHeader({ trip }: { trip: Trip }) {
             <Button type="submit">저장</Button>
           </div>
         </form>
+
+        <div className="mt-4 border-t pt-4">
+          <AddDayForm />
+        </div>
       </details>
     </section>
   );

@@ -17,7 +17,7 @@ export function ItemCard({ dayId, item }: { dayId: string; item: Item }) {
   const updateAction = updateItem.bind(null, dayId, item.id);
 
   return (
-    <li className="rounded-md border">
+    <li className="rounded-md border bg-card">
       {/* 접었다 펼 수 있는 항목: 접힌 상태에는 유형·시간·제목만 보인다 */}
       <details>
         <summary className="flex cursor-pointer items-center gap-2 p-3">

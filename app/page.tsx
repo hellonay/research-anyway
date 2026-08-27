@@ -1,4 +1,3 @@
-import { AddDayForm } from "@/components/trip/add-day-form";
 import { DaySection } from "@/components/trip/day-section";
 import { PageContainer } from "@/components/trip/page-container";
 import { TripHeader } from "@/components/trip/trip-header";
@@ -13,10 +12,9 @@ export default async function Home() {
   return (
     <PageContainer>
       <TripHeader trip={trip} />
-      <AddDayForm />
       <div className="space-y-4">
-        {trip.days.map((day) => (
-          <DaySection key={day.id} day={day} />
+        {trip.days.map((day, index) => (
+          <DaySection key={day.id} day={day} index={index} />
         ))}
       </div>
     </PageContainer>
