@@ -32,5 +32,7 @@ export default defineConfig({
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    // proxy.ts가 SITE_PASSWORD 없이는 전체 페이지를 잠그므로 E2E 전용 값을 준다.
+    env: { SITE_PASSWORD: "e2e-test-password" },
   },
 });

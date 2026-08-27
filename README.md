@@ -19,6 +19,10 @@ bun dev
 
 [http://localhost:3000](http://localhost:3000)에서 결과를 확인할 수 있습니다.
 
+## 환경 변수
+
+`.env.example`을 참고해 `.env.local`을 만들고 `SITE_PASSWORD`를 채웁니다. 이 값은 공유 페이지 전체를 잠그는 비밀번호로, 비어 있으면 아무도 로그인할 수 없습니다(`proxy.ts`, `lib/auth/session.ts`, `docs/decisions/access-control.md` 참고). 배포(Vercel)에서는 프로젝트 Settings → Environment Variables에 같은 이름으로 설정합니다.
+
 ## 스크립트
 
 | 명령어 | 설명 |
