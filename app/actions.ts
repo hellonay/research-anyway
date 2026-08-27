@@ -79,10 +79,12 @@ export async function updateDay(dayId: string, formData: FormData) {
 export async function deleteDay(dayId: string) {
   await mutateTrip((trip) => {
     trip.days = trip.days.filter((d) => d.id !== dayId);
+    trip.galleryPhotos = trip.galleryPhotos.filter((p) => p.dayId !== dayId);
     return trip;
   });
 
   revalidatePath("/");
+  revalidatePath("/photos");
 }
 
 export async function addItem(dayId: string, formData: FormData) {
@@ -285,7 +287,7 @@ export async function deleteInfoNotePhoto(
   revalidatePath("/info");
 }
 
-export async function addGalleryPhotos(formData: FormData) {
+export async function addGalleryPhotos(dayId: string | null, formData: FormData) {
   const caption = optionalText(formData.get("caption"));
   const photos = await collectPhotos(formData);
   if (photos.length === 0) return;
@@ -296,6 +298,7 @@ export async function addGalleryPhotos(formData: FormData) {
         id: photo.id,
         url: photo.url,
         caption,
+        dayId,
         createdAt: Date.now(),
       });
     }
