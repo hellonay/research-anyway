@@ -35,6 +35,8 @@ export function GalleryGrid({ photos }: { photos: GalleryPhoto[] }) {
                 <img
                   src={photo.url}
                   alt={photo.caption ?? ""}
+                  loading="lazy"
+                  decoding="async"
                   className="aspect-square w-full rounded-md object-cover"
                 />
               </button>
