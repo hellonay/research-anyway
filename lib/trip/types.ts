@@ -1,12 +1,4 @@
-export const ITEM_TYPES = [
-  "항공권",
-  "숙소",
-  "골프",
-  "식당",
-  "관광",
-  "이동수단",
-  "기타",
-] as const;
+export const ITEM_TYPES = ["이동", "식사", "여가", "휴식", "쇼핑", "기타"] as const;
 
 export type ItemType = (typeof ITEM_TYPES)[number];
 
