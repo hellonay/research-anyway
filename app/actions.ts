@@ -63,6 +63,19 @@ export async function addDay(formData: FormData) {
   revalidatePath("/");
 }
 
+export async function updateDay(dayId: string, formData: FormData) {
+  const label = optionalText(formData.get("label"));
+  if (!label) return;
+
+  await mutateTrip((trip) => {
+    const day = trip.days.find((d) => d.id === dayId);
+    if (day) day.label = label;
+    return trip;
+  });
+
+  revalidatePath("/");
+}
+
 export async function deleteDay(dayId: string) {
   await mutateTrip((trip) => {
     trip.days = trip.days.filter((d) => d.id !== dayId);
