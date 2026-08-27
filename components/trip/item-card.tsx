@@ -1,11 +1,10 @@
 import { Car, Compass, Ellipsis, ShoppingBag, Sparkles, Utensils } from "lucide-react";
-import { deleteItem, deleteItemPhoto, updateItem } from "@/app/actions";
+import { deleteItem, deleteItemPhoto } from "@/app/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { ITEM_TYPES, type Item, type ItemType } from "@/lib/trip/types";
+import { ItemEditForm } from "@/components/trip/item-edit-form";
+import { resolveMapEmbedSrc } from "@/lib/trip/map-embed";
+import { type Item, type ItemType } from "@/lib/trip/types";
 
 // 텍스트 배지는 "쇼핑"·"맛사지"가 전부 "기타"로 뭉뚱그려지는 등 제목과
 // 따로 노는 느낌이 강해, 카테고리는 아이콘으로만 가볍게 표시하고
@@ -31,10 +30,10 @@ function timeRange(item: Item) {
   return null;
 }
 
-export function ItemCard({ dayId, item }: { dayId: string; item: Item }) {
+export async function ItemCard({ dayId, item }: { dayId: string; item: Item }) {
   const range = timeRange(item);
-  const updateAction = updateItem.bind(null, dayId, item.id);
   const TypeIcon = iconForItemType(item.type);
+  const mapEmbedSrc = item.mapUrl ? await resolveMapEmbedSrc(item.mapUrl) : null;
 
   return (
     <li className="rounded-md border bg-card">
@@ -51,14 +50,27 @@ export function ItemCard({ dayId, item }: { dayId: string; item: Item }) {
         <div className="space-y-3 border-t p-3">
           {item.note && <p className="text-sm text-muted-foreground">{item.note}</p>}
           {item.mapUrl && (
-            <a
-              href={item.mapUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-medium text-primary underline underline-offset-2"
-            >
-              지도에서 보기
-            </a>
+            <div className="space-y-2">
+              <a
+                href={item.mapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-medium text-primary underline underline-offset-2"
+              >
+                지도에서 보기
+              </a>
+              {/* 좌표·장소명이 URL에 담긴 링크에서만 비공식 임베드로 미니맵을
+                  보여준다. maps.app.goo.gl 같은 단축 링크는 뜨지 않는다. */}
+              {mapEmbedSrc && (
+                <iframe
+                  src={mapEmbedSrc}
+                  className="h-40 w-full rounded-md border-0"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title={`${item.title} 지도`}
+                />
+              )}
+            </div>
           )}
 
           {item.photos.length > 0 && (
@@ -87,91 +99,7 @@ export function ItemCard({ dayId, item }: { dayId: string; item: Item }) {
             </div>
           )}
 
-          <details>
-            <summary className="cursor-pointer text-sm font-medium">수정</summary>
-            <form
-              action={updateAction}
-              encType="multipart/form-data"
-              className="mt-3 grid gap-3 sm:grid-cols-2"
-            >
-              <div className="space-y-1.5 sm:col-span-2">
-                <Label htmlFor={`edit-title-${item.id}`}>제목</Label>
-                <Input
-                  id={`edit-title-${item.id}`}
-                  name="title"
-                  defaultValue={item.title}
-                  required
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor={`edit-type-${item.id}`}>유형</Label>
-                <select
-                  id={`edit-type-${item.id}`}
-                  name="type"
-                  defaultValue={item.type}
-                  className="h-9 w-full rounded-md border border-input bg-transparent px-3 text-sm shadow-xs"
-                >
-                  {ITEM_TYPES.map((type) => (
-                    <option key={type} value={type}>
-                      {type}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1.5">
-                  <Label htmlFor={`edit-start-${item.id}`}>시작 시간</Label>
-                  <Input
-                    id={`edit-start-${item.id}`}
-                    name="startTime"
-                    type="time"
-                    defaultValue={item.startTime ?? ""}
-                  />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor={`edit-end-${item.id}`}>종료 시간</Label>
-                  <Input
-                    id={`edit-end-${item.id}`}
-                    name="endTime"
-                    type="time"
-                    defaultValue={item.endTime ?? ""}
-                  />
-                </div>
-              </div>
-              <div className="space-y-1.5 sm:col-span-2">
-                <Label htmlFor={`edit-note-${item.id}`}>메모</Label>
-                <Textarea
-                  id={`edit-note-${item.id}`}
-                  name="note"
-                  rows={2}
-                  defaultValue={item.note ?? ""}
-                />
-              </div>
-              <div className="space-y-1.5 sm:col-span-2">
-                <Label htmlFor={`edit-map-${item.id}`}>구글맵 링크</Label>
-                <Input
-                  id={`edit-map-${item.id}`}
-                  name="mapUrl"
-                  type="url"
-                  defaultValue={item.mapUrl ?? ""}
-                  placeholder="https://maps.app.goo.gl/..."
-                />
-              </div>
-              <div className="space-y-1.5 sm:col-span-2">
-                <Label htmlFor={`edit-photos-${item.id}`}>사진 추가</Label>
-                <Input
-                  id={`edit-photos-${item.id}`}
-                  name="photos"
-                  type="file"
-                  accept="image/*"
-                  multiple
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <Button type="submit">저장</Button>
-              </div>
-            </form>
-          </details>
+          <ItemEditForm dayId={dayId} item={item} />
 
           <form action={deleteItem.bind(null, dayId, item.id)}>
             <Button type="submit" variant="destructive">
