@@ -27,3 +27,4 @@
 ## Evidence worth preserving
 
 - 로컬 `bun dev`는 문제 없이 동작했지만, 배포된 프로덕션(https://research-anyway.vercel.app/)에서는 React 에러 다이제스트 `635218922`(React 미니파이드 에러 #441: "An error occurred in the Server Components render")로 즉시 재현됐다. 원인은 `lib/trip/store.ts`가 `process.cwd()` 아래 `data/trip.json`을 읽기 전에 없으면 만들려고 시도한 것이었다.
+- 사진 3장을 한 번에 올리면 빈 화면 에러가 재현됐다(2026-08-27). Next.js 서버 액션 요청 본문 기본 상한(1MB)을 넘겨서였다. `next.config.ts`에 `experimental.serverActions.bodySizeLimit: "4mb"`를 설정해 완화했지만, Vercel 서버리스 함수 자체의 요청 본문 상한(4.5MB, 설정으로 못 바꿈)은 여전히 남아있다. 자세한 내용은 `docs/follow-ups/photo-upload-vercel-payload-cap.md` 참고.
