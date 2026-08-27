@@ -174,7 +174,7 @@ export function ItemCard({ dayId, item }: { dayId: string; item: Item }) {
           </details>
 
           <form action={deleteItem.bind(null, dayId, item.id)}>
-            <Button type="submit" variant="ghost" size="sm">
+            <Button type="submit" variant="destructive">
               항목 삭제
             </Button>
           </form>

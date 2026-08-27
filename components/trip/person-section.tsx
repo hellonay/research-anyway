@@ -34,7 +34,7 @@ export function PersonSection({ person, index }: { person: Person; index: number
         <AddInfoNoteForm personId={person.id} />
 
         <form action={deletePerson.bind(null, person.id)}>
-          <Button type="submit" variant="ghost" size="sm">
+          <Button type="submit" variant="destructive">
             사람 삭제
           </Button>
         </form>
