@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useTransition } from "react";
 
 import { addInfoNote } from "@/app/actions";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -8,9 +8,27 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
+// 적용을 누르면 서버 액션을 직접 호출해 완료를 기다린 뒤 패널을 접고,
+// 취소를 누르면 입력값만 비우고 패널을 접는다. 폼 제출을 브라우저에
+// 맡기지 않고 여기서 처리하므로 action/encType 조합 대신 onSubmit을 쓴다.
 export function AddInfoNoteForm({ personId }: { personId: string }) {
-  const action = addInfoNote.bind(null, personId);
   const detailsRef = useRef<HTMLDetailsElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [pending, startTransition] = useTransition();
+
+  function close() {
+    formRef.current?.reset();
+    if (detailsRef.current) detailsRef.current.open = false;
+  }
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(formRef.current!);
+    startTransition(async () => {
+      await addInfoNote(personId, formData);
+      close();
+    });
+  }
 
   return (
     <details ref={detailsRef}>
@@ -23,8 +41,8 @@ export function AddInfoNoteForm({ personId }: { personId: string }) {
         + 추가
       </summary>
       <form
-        action={action}
-        encType="multipart/form-data"
+        ref={formRef}
+        onSubmit={handleSubmit}
         className="mt-3 space-y-3 rounded-md border border-dashed p-3"
       >
         <div className="space-y-1.5">
@@ -59,14 +77,10 @@ export function AddInfoNoteForm({ personId }: { personId: string }) {
           />
         </div>
         <div className="flex gap-2">
-          <Button type="submit">적용</Button>
-          <Button
-            type="reset"
-            variant="outline"
-            onClick={() => {
-              if (detailsRef.current) detailsRef.current.open = false;
-            }}
-          >
+          <Button type="submit" disabled={pending}>
+            적용
+          </Button>
+          <Button type="button" variant="outline" onClick={close}>
             취소
           </Button>
         </div>
